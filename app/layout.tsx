@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Golos_Text } from "next/font/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </SmoothScrollProvider>
       </body>
+      <GoogleTagManager gtmId="GTM-5L4TXL4V" />
     </html>
   );
 }

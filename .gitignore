@@ -2,3 +2,5 @@
 .next/
 tsconfig.tsbuildinfo
 .env*
+!.env.example
+lib/generated/

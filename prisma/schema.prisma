@@ -1,0 +1,274 @@
+// DFX Solution — Lead Generation / CRM data model.
+// Run `npx prisma migrate dev --name init` after setting DATABASE_URL to create the tables.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+/// Sales pipeline stage. Drives the future CRM's Kanban board without any
+/// schema change — see LeadActivity for the audit trail behind each move.
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  MEETING_BOOKED
+  PROPOSAL_SENT
+  NEGOTIATION
+  WON
+  LOST
+  SPAM
+}
+
+enum LeadPriority {
+  HOT
+  WARM
+  COLD
+}
+
+enum ServiceInterested {
+  META_ADS
+  GOOGLE_ADS
+  SEO
+  WEBSITE
+  AI_AUTOMATION
+  CRM
+  ERP
+  CUSTOM_SOFTWARE
+  SAAS
+  BRANDING
+  OTHER
+}
+
+enum Industry {
+  HEALTHCARE
+  HOSPITALITY
+  JEWELLERY
+  MANUFACTURING
+  EDUCATION
+  REAL_ESTATE
+  RESTAURANTS
+  SMES_RETAIL
+  ECOMMERCE
+  TECHNOLOGY_SAAS
+  FINANCE
+  OTHER
+}
+
+enum CompanySize {
+  SIZE_1_10
+  SIZE_11_50
+  SIZE_51_200
+  SIZE_201_500
+  SIZE_500_PLUS
+}
+
+enum MonthlyRevenue {
+  UNDER_5L
+  RANGE_5L_25L
+  RANGE_25L_1CR
+  RANGE_1CR_5CR
+  ABOVE_5CR
+  PREFER_NOT_TO_SAY
+}
+
+enum MarketingBudget {
+  UNDER_25K
+  RANGE_25K_50K
+  RANGE_50K_1L
+  RANGE_1L_5L
+  ABOVE_5L
+}
+
+enum MarketingChannel {
+  SOCIAL_MEDIA
+  GOOGLE_ADS
+  META_ADS
+  SEO
+  EMAIL_MARKETING
+  REFERRALS
+  OFFLINE_PRINT
+  NONE_CURRENTLY
+  OTHER
+}
+
+enum TargetMarket {
+  LOCAL
+  REGIONAL
+  NATIONAL
+  INTERNATIONAL
+}
+
+enum Timeline {
+  IMMEDIATELY
+  WITHIN_1_MONTH
+  ONE_TO_THREE_MONTHS
+  THREE_TO_SIX_MONTHS
+  NOT_SURE
+}
+
+enum LeadActivityType {
+  CREATED
+  STATUS_CHANGED
+  NOTE_ADDED
+  CALL_LOGGED
+  EMAIL_SENT
+  FOLLOW_UP_SCHEDULED
+}
+
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+/// Core lead record captured from the "Book Your AI Growth Strategy Session"
+/// multi-step form. Doubles as the seed table for the future in-house CRM
+/// (pipeline, assignment, notes, call logs, timeline) — nothing here needs to
+/// change shape for that dashboard to be built on top of it.
+model Lead {
+  id        String   @id @default(cuid())
+  /// Human-readable, publicly shareable reference (e.g. "DFX-8K3N2P1Q"). The
+  /// thank-you page and emails show this instead of the internal cuid `id`.
+  leadId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  /// Client-captured render timestamp — when the visitor actually completed
+  /// the form, which can lag `createdAt` (server receipt) under bad network.
+  submittedAt DateTime
+
+  // Step 1 — Personal information
+  firstName String
+  lastName  String
+  /// Denormalized `${firstName} ${lastName}` for fast search/display in the
+  /// future CRM lead list without joining or concatenating at query time.
+  fullName    String
+  email       String
+  phone       String
+  countryCode String
+  company     String
+  designation String
+  website     String?
+  linkedin    String?
+
+  // Step 2 — Business information
+  industry         Industry
+  companySize      CompanySize
+  monthlyRevenue   MonthlyRevenue?
+  currentChannels  MarketingChannel[]
+  businessLocation String?
+  targetMarket     TargetMarket?
+  marketingBudget  MarketingBudget
+  services         ServiceInterested[]
+
+  // Step 3 — Project details
+  timeline          Timeline
+  businessChallenge String?
+  goal              String?
+  message           String?
+
+  // Optional attachment (brief, deck, etc.)
+  attachmentUrl  String?
+  attachmentName String?
+  attachmentSize Int?
+  attachmentType String?
+
+  // Lead intelligence
+  status     LeadStatus   @default(NEW)
+  leadScore  Int          @default(0)
+  priority   LeadPriority @default(COLD)
+
+  // Attribution
+  source      String?
+  medium      String?
+  campaign    String?
+  term        String?
+  content     String?
+  gclid       String?
+  fbclid      String?
+  landingPage String?
+  referrer    String?
+
+  // Request / device metadata
+  browser          String?
+  device           String?
+  os               String?
+  screenResolution String?
+  timezone         String?
+  language         String?
+  country          String?
+  city             String?
+  ipAddress        String?
+  clientId         String?
+  sessionId        String?
+
+  // Spam / duplicate protection
+  clientRequestId String? @unique
+
+  // CRM pipeline (future dashboard)
+  assignedTo     String?
+  followUpDate   DateTime?
+  proposalSentAt DateTime?
+  invoiceSentAt  DateTime?
+  closedAt       DateTime?
+
+  notes      LeadNote[]
+  callLogs   CallLog[]
+  activities LeadActivity[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+  @@map("leads")
+}
+
+/// Free-form notes a sales rep leaves on a lead (future CRM feature).
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  body      String
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+  @@map("lead_notes")
+}
+
+/// Call log entries tied to a lead (future CRM feature).
+model CallLog {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  outcome   String?
+  notes     String?
+  calledAt  DateTime @default(now())
+  createdBy String?
+
+  @@index([leadId])
+  @@map("call_logs")
+}
+
+/// Append-only audit trail behind the future CRM's "Lead Timeline" view —
+/// every status change, note, call, and email against a lead in one feed.
+model LeadActivity {
+  id          String           @id @default(cuid())
+  leadId      String
+  lead        Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  type        LeadActivityType
+  description String
+  metadata    Json?
+  createdBy   String?
+  createdAt   DateTime         @default(now())
+
+  @@index([leadId])
+  @@map("lead_activities")
+}

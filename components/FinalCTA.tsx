@@ -1,9 +1,6 @@
-"use client";
-
-import { useState } from "react";
+import { MultiStepLeadForm } from "@/components/forms/MultiStepLeadForm";
 
 export function FinalCTA() {
-  const [sent, setSent] = useState(false);
   return (
     <section
       id="contact"
@@ -16,33 +13,10 @@ export function FinalCTA() {
         <h2 className="font-semibold tracking-tight text-[clamp(2rem,4.6vw,3.4rem)] max-w-[18ch] mx-auto mb-4">
           Book Your AI Growth Strategy Session
         </h2>
-        <p className="max-w-[42ch] mx-auto mb-8 text-tx2">
-          30 minutes. No pitch deck. A clear map of what to build first.
+        <p className="max-w-[46ch] mx-auto mb-10 text-tx2">
+          30-minute strategy session. No sales pitch. Get a personalized AI growth roadmap for your business.
         </p>
-        {sent ? (
-          <p className="text-highlight font-semibold">Request received — we&apos;ll be in touch within 24 hours.</p>
-        ) : (
-          <form
-            className="flex gap-3 max-w-[520px] mx-auto flex-wrap justify-center"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSent(true);
-            }}
-          >
-            <input
-              type="email"
-              required
-              placeholder="Your work email"
-              className="flex-1 min-w-[220px] bg-card border border-border rounded-xl text-tx text-sm px-4 py-3.5 outline-none focus:border-secondary transition-colors"
-            />
-            <button
-              type="submit"
-              className="rounded-xl px-7 py-3.5 text-sm font-semibold bg-gradient-to-br from-primary to-secondary text-white hover:shadow-[0_10px_34px_-8px_rgba(135,119,224,0.45)] transition-shadow"
-            >
-              Book Session →
-            </button>
-          </form>
-        )}
+        <MultiStepLeadForm />
       </div>
     </section>
   );

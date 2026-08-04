@@ -1,9 +1,8 @@
 import { useFormContext } from "react-hook-form";
 import type { LeadFormSchema } from "@/validation/leadSchema";
-import { TIMELINE_OPTIONS } from "@/types/lead";
+import { PRIMARY_GOAL_OPTIONS, TIMELINE_OPTIONS, HEAR_ABOUT_US_OPTIONS, PROJECT_BUDGET_OPTIONS } from "@/types/lead";
 import { SelectField } from "../SelectField";
 import { TextAreaField } from "../TextAreaField";
-import { FileUploadField } from "../FileUploadField";
 
 export function StepProjectDetails() {
   const {
@@ -14,39 +13,45 @@ export function StepProjectDetails() {
   return (
     <div className="grid sm:grid-cols-2 gap-4">
       <SelectField
-        label="Timeline"
+        label="Primary Goal"
+        placeholder="What's your primary goal?"
+        required
+        registration={register("primaryGoal")}
+        error={errors.primaryGoal?.message}
+        options={PRIMARY_GOAL_OPTIONS}
+      />
+      <SelectField
+        label="Project Timeline"
         placeholder="When do you want to start?"
         required
         registration={register("timeline")}
         error={errors.timeline?.message}
         options={TIMELINE_OPTIONS}
-        className="sm:col-span-2"
+      />
+      <SelectField
+        label="How did you hear about us?"
+        placeholder="Select an option"
+        required
+        registration={register("hearAboutUs")}
+        error={errors.hearAboutUs?.message}
+        options={HEAR_ABOUT_US_OPTIONS}
+      />
+      <SelectField
+        label="Estimated Project Budget"
+        placeholder="Select a budget range"
+        required
+        registration={register("projectBudget")}
+        error={errors.projectBudget?.message}
+        options={PROJECT_BUDGET_OPTIONS}
       />
       <TextAreaField
-        label="Biggest Business Challenge"
-        registration={register("businessChallenge")}
-        error={errors.businessChallenge?.message}
-        placeholder="What's the single biggest thing holding your growth back?"
-        rows={3}
-        className="sm:col-span-2"
-      />
-      <TextAreaField
-        label="Goals"
-        registration={register("goal")}
-        error={errors.goal?.message}
-        placeholder="What does success look like in the next 6–12 months?"
-        rows={3}
-        className="sm:col-span-2"
-      />
-      <TextAreaField
-        label="Message"
+        label="Tell us about your project (Optional)"
         registration={register("message")}
         error={errors.message?.message}
-        placeholder="Anything else we should know?"
+        placeholder="Briefly describe your business, your current challenges, or what you'd like us to build."
         rows={3}
         className="sm:col-span-2"
       />
-      <FileUploadField />
     </div>
   );
 }

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ lea
     company: lead.company,
     email: lead.email,
     phone: `${lead.countryCode} ${lead.phone}`,
-    services: lead.services,
+    primaryService: lead.primaryService,
     marketingBudget: lead.marketingBudget,
     timeline: lead.timeline,
     submittedAt: lead.submittedAt.toISOString(),

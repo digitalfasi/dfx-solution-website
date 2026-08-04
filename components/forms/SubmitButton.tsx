@@ -16,10 +16,10 @@ export function SubmitButton({ submitting }: { submitting: boolean }) {
       {submitting ? (
         <>
           <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-          Booking your session…
+          Sending…
         </>
       ) : (
-        "Book Free Strategy Session"
+        "Get My Free AI Growth Strategy"
       )}
     </button>
   );

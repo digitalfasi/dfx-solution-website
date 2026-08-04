@@ -2,16 +2,16 @@ import type { LeadModel as Lead } from "@/lib/generated/prisma/models";
 import { escapeHtml } from "@/lib/email/escapeHtml";
 import { renderEmailLayout } from "./layout";
 import {
-  SERVICE_OPTIONS,
+  PRIMARY_SERVICE_OPTIONS,
   INDUSTRY_OPTIONS,
   COMPANY_SIZE_OPTIONS,
-  MONTHLY_REVENUE_OPTIONS,
   MARKETING_BUDGET_OPTIONS,
-  MARKETING_CHANNEL_OPTIONS,
-  TARGET_MARKET_OPTIONS,
+  PRIMARY_GOAL_OPTIONS,
   TIMELINE_OPTIONS,
+  HEAR_ABOUT_US_OPTIONS,
+  PROJECT_BUDGET_OPTIONS,
 } from "@/types/lead";
-import { labelFor, labelsFor } from "@/utils/labels";
+import { labelFor } from "@/utils/labels";
 
 const PRIORITY_COLOR: Record<string, string> = { HOT: "#E0393E", WARM: "#D08A0A", COLD: "#60A3E6" };
 
@@ -48,30 +48,24 @@ export function renderInternalNotificationEmail(lead: Lead): { subject: string; 
       ${row("Email", `<a href="mailto:${escapeHtml(lead.email)}" style="color:#8777E0;">${escapeHtml(lead.email)}</a>`)}
       ${row("Phone", escapeHtml(`${lead.countryCode} ${lead.phone}`))}
       ${row("Company", escapeHtml(lead.company))}
-      ${row("Job Title", escapeHtml(lead.designation))}
       ${row("Website", lead.website ? `<a href="${escapeHtml(lead.website)}" style="color:#8777E0;">${escapeHtml(lead.website)}</a>` : "—")}
-      ${row("LinkedIn", lead.linkedin ? `<a href="${escapeHtml(lead.linkedin)}" style="color:#8777E0;">${escapeHtml(lead.linkedin)}</a>` : "—")}
     </table>
 
     <h2 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#181B31;">Business</h2>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
       ${row("Industry", escapeHtml(labelFor(INDUSTRY_OPTIONS, lead.industry)))}
+      ${row("Primary Service Needed", escapeHtml(labelFor(PRIMARY_SERVICE_OPTIONS, lead.primaryService)))}
       ${row("Company Size", escapeHtml(labelFor(COMPANY_SIZE_OPTIONS, lead.companySize)))}
-      ${row("Monthly Revenue", escapeHtml(labelFor(MONTHLY_REVENUE_OPTIONS, lead.monthlyRevenue)))}
-      ${row("Current Channels", escapeHtml(labelsFor(MARKETING_CHANNEL_OPTIONS, lead.currentChannels)))}
-      ${row("Business Location", escapeHtml(lead.businessLocation))}
-      ${row("Target Market", escapeHtml(labelFor(TARGET_MARKET_OPTIONS, lead.targetMarket)))}
-      ${row("Marketing Budget", escapeHtml(labelFor(MARKETING_BUDGET_OPTIONS, lead.marketingBudget)))}
-      ${row("Services Interested", escapeHtml(labelsFor(SERVICE_OPTIONS, lead.services)))}
+      ${row("Monthly Marketing Budget", escapeHtml(labelFor(MARKETING_BUDGET_OPTIONS, lead.marketingBudget)))}
     </table>
 
     <h2 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#181B31;">Project</h2>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-      ${row("Timeline", escapeHtml(labelFor(TIMELINE_OPTIONS, lead.timeline)))}
-      ${row("Biggest Challenge", escapeHtml(lead.businessChallenge))}
-      ${row("Goal", escapeHtml(lead.goal))}
-      ${row("Message", escapeHtml(lead.message))}
-      ${row("Attachment", lead.attachmentUrl ? `<a href="${escapeHtml(lead.attachmentUrl)}" style="color:#8777E0;">${escapeHtml(lead.attachmentName || "View file")}</a>` : "—")}
+      ${row("Primary Goal", escapeHtml(labelFor(PRIMARY_GOAL_OPTIONS, lead.primaryGoal)))}
+      ${row("Project Timeline", escapeHtml(labelFor(TIMELINE_OPTIONS, lead.timeline)))}
+      ${row("How They Heard About Us", escapeHtml(labelFor(HEAR_ABOUT_US_OPTIONS, lead.hearAboutUs)))}
+      ${row("Estimated Project Budget", escapeHtml(labelFor(PROJECT_BUDGET_OPTIONS, lead.projectBudget)))}
+      ${row("Project Details", escapeHtml(lead.message))}
     </table>
 
     <h2 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#181B31;">Attribution &amp; Meta</h2>

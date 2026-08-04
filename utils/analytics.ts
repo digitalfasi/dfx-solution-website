@@ -17,7 +17,7 @@ declare global {
 
 export interface GenerateLeadPayload {
   leadId: string;
-  services: string[];
+  primaryService: string;
   marketingBudget: string;
   leadScore?: number;
   priority?: string;
@@ -32,7 +32,7 @@ export function trackGenerateLead(payload: GenerateLeadPayload): void {
 
   const eventParams = {
     lead_id: payload.leadId,
-    services_interested: payload.services.join(","),
+    service_interested: payload.primaryService,
     marketing_budget: payload.marketingBudget,
     lead_score: payload.leadScore,
     lead_priority: payload.priority,
@@ -52,7 +52,7 @@ export function trackGenerateLead(payload: GenerateLeadPayload): void {
   }
 
   if (typeof window.fbq === "function") {
-    window.fbq("track", "Lead", { content_name: payload.services.join(",") });
+    window.fbq("track", "Lead", { content_name: payload.primaryService });
   }
 
   if (typeof window.clarity === "function") {

@@ -34,85 +34,97 @@ enum LeadPriority {
   COLD
 }
 
-enum ServiceInterested {
+enum PrimaryService {
+  WEBSITE_DEVELOPMENT
   META_ADS
   GOOGLE_ADS
   SEO
-  WEBSITE
+  SOCIAL_MEDIA_MARKETING
   AI_AUTOMATION
-  CRM
-  ERP
-  CUSTOM_SOFTWARE
-  SAAS
+  CRM_DEVELOPMENT
+  CUSTOM_SOFTWARE_DEVELOPMENT
+  SAAS_DEVELOPMENT
   BRANDING
-  OTHER
+  MULTIPLE_SERVICES
+  NOT_SURE
 }
 
 enum Industry {
-  HEALTHCARE
-  HOSPITALITY
-  JEWELLERY
-  MANUFACTURING
+  HEALTHCARE_HOSPITAL
+  DENTAL_CLINIC
   EDUCATION
   REAL_ESTATE
-  RESTAURANTS
-  SMES_RETAIL
   ECOMMERCE
-  TECHNOLOGY_SAAS
+  RETAIL
+  RESTAURANT_CAFE
+  MANUFACTURING
+  LEATHER_INDUSTRY
+  JEWELLERY
   FINANCE
+  TRAVEL_TOURISM
+  CONSTRUCTION
+  AUTOMOBILE
+  TECHNOLOGY
   OTHER
 }
 
 enum CompanySize {
+  JUST_STARTED
   SIZE_1_10
   SIZE_11_50
   SIZE_51_200
-  SIZE_201_500
-  SIZE_500_PLUS
-}
-
-enum MonthlyRevenue {
-  UNDER_5L
-  RANGE_5L_25L
-  RANGE_25L_1CR
-  RANGE_1CR_5CR
-  ABOVE_5CR
-  PREFER_NOT_TO_SAY
+  SIZE_200_PLUS
 }
 
 enum MarketingBudget {
   UNDER_25K
   RANGE_25K_50K
   RANGE_50K_1L
-  RANGE_1L_5L
-  ABOVE_5L
+  RANGE_1L_3L
+  ABOVE_3L
+  NOT_DECIDED
 }
 
-enum MarketingChannel {
-  SOCIAL_MEDIA
-  GOOGLE_ADS
-  META_ADS
-  SEO
-  EMAIL_MARKETING
-  REFERRALS
-  OFFLINE_PRINT
-  NONE_CURRENTLY
-  OTHER
-}
-
-enum TargetMarket {
-  LOCAL
-  REGIONAL
-  NATIONAL
-  INTERNATIONAL
+enum PrimaryGoal {
+  GENERATE_MORE_LEADS
+  INCREASE_SALES
+  BUILD_PREMIUM_WEBSITE
+  IMPROVE_SEO
+  RUN_META_ADS
+  RUN_GOOGLE_ADS
+  AI_AUTOMATION
+  CRM_DEVELOPMENT
+  SAAS_DEVELOPMENT
+  BRAND_AWARENESS
+  NEED_COMPLETE_GROWTH_STRATEGY
 }
 
 enum Timeline {
   IMMEDIATELY
   WITHIN_1_MONTH
-  ONE_TO_THREE_MONTHS
-  THREE_TO_SIX_MONTHS
-  NOT_SURE
+  WITHIN_3_MONTHS
+  JUST_EXPLORING
+}
+
+enum HearAboutUs {
+  GOOGLE_SEARCH
+  INSTAGRAM
+  FACEBOOK
+  LINKEDIN
+  REFERRAL
+  YOUTUBE
+  WHATSAPP
+  EXISTING_CLIENT
+  OTHER
+}
+
+enum ProjectBudget {
+  UNDER_50K
+  RANGE_50K_1L
+  RANGE_1L_3L
+  RANGE_3L_5L
+  ABOVE_5L
+  NEED_RECOMMENDATION
 }
 
 enum LeadActivityType {
@@ -143,41 +155,30 @@ model Lead {
   /// the form, which can lag `createdAt` (server receipt) under bad network.
   submittedAt DateTime
 
-  // Step 1 — Personal information
+  // Step 1 — Contact details
   firstName String
-  lastName  String
+  lastName  String?
   /// Denormalized `${firstName} ${lastName}` for fast search/display in the
   /// future CRM lead list without joining or concatenating at query time.
   fullName    String
   email       String
   phone       String
-  countryCode String
+  countryCode String @default("+91")
   company     String
-  designation String
   website     String?
-  linkedin    String?
 
   // Step 2 — Business information
-  industry         Industry
-  companySize      CompanySize
-  monthlyRevenue   MonthlyRevenue?
-  currentChannels  MarketingChannel[]
-  businessLocation String?
-  targetMarket     TargetMarket?
-  marketingBudget  MarketingBudget
-  services         ServiceInterested[]
+  industry        Industry
+  primaryService  PrimaryService
+  companySize     CompanySize
+  marketingBudget MarketingBudget
 
-  // Step 3 — Project details
-  timeline          Timeline
-  businessChallenge String?
-  goal              String?
-  message           String?
-
-  // Optional attachment (brief, deck, etc.)
-  attachmentUrl  String?
-  attachmentName String?
-  attachmentSize Int?
-  attachmentType String?
+  // Step 3 — Project information
+  primaryGoal   PrimaryGoal
+  timeline      Timeline
+  hearAboutUs   HearAboutUs
+  projectBudget ProjectBudget
+  message       String?
 
   // Lead intelligence
   status     LeadStatus   @default(NEW)

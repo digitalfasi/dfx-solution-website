@@ -76,11 +76,9 @@ export async function createLead(data: CreateLeadRequestSchema, context: LeadReq
   }
 
   const firstName = sanitizeText(data.firstName);
-  const lastName = sanitizeText(data.lastName);
+  const lastName = data.lastName ? sanitizeText(data.lastName) : null;
   const company = sanitizeText(data.company);
   const message = data.message ? sanitizeText(data.message) : null;
-  const businessChallenge = data.businessChallenge ? sanitizeText(data.businessChallenge) : null;
-  const goal = data.goal ? sanitizeText(data.goal) : null;
   const website = data.website ? sanitizeUrl(data.website) : null;
 
   const { leadScore, priority } = calculateLeadScore({
@@ -91,41 +89,33 @@ export async function createLead(data: CreateLeadRequestSchema, context: LeadReq
     countryCode: data.countryCode,
     companySize: data.companySize,
     marketingBudget: data.marketingBudget,
+    projectBudget: data.projectBudget,
     message: message || undefined,
     timeline: data.timeline,
-    services: data.services,
+    primaryService: data.primaryService,
   });
 
   const lead = await createLeadWithUniqueLeadId({
     submittedAt: new Date(data.formRenderedAt),
     firstName,
     lastName,
-    fullName: `${firstName} ${lastName}`,
+    fullName: lastName ? `${firstName} ${lastName}` : firstName,
     email,
     phone,
     countryCode: data.countryCode,
     company,
-    designation: sanitizeText(data.designation),
     website,
-    linkedin: data.linkedin ? sanitizeUrl(data.linkedin) : null,
 
     industry: data.industry,
+    primaryService: data.primaryService,
     companySize: data.companySize,
-    monthlyRevenue: data.monthlyRevenue || null,
-    currentChannels: data.currentChannels,
-    businessLocation: data.businessLocation ? sanitizeText(data.businessLocation) : null,
-    targetMarket: data.targetMarket || null,
     marketingBudget: data.marketingBudget,
-    services: data.services,
 
+    primaryGoal: data.primaryGoal,
     timeline: data.timeline,
-    businessChallenge,
-    goal,
+    hearAboutUs: data.hearAboutUs,
+    projectBudget: data.projectBudget,
     message,
-    attachmentUrl: data.attachmentUrl || null,
-    attachmentName: data.attachmentName ? sanitizeText(data.attachmentName) : null,
-    attachmentSize: data.attachmentSize ?? null,
-    attachmentType: data.attachmentType || null,
 
     leadScore,
     priority,

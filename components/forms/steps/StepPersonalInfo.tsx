@@ -1,9 +1,9 @@
 import { useFormContext } from "react-hook-form";
 import type { LeadFormSchema } from "@/validation/leadSchema";
-import { COUNTRY_CODE_OPTIONS } from "@/types/lead";
+import { DEFAULT_COUNTRY_CODE } from "@/types/lead";
 import { TextField } from "../TextField";
 import { FormField } from "../FormField";
-import { fieldClasses, fieldErrorClasses } from "../formStyles";
+import { fieldErrorClasses } from "../formStyles";
 import clsx from "clsx";
 
 export function StepPersonalInfo() {
@@ -15,7 +15,7 @@ export function StepPersonalInfo() {
   return (
     <div className="grid sm:grid-cols-2 gap-4">
       <TextField label="First Name" required registration={register("firstName")} error={errors.firstName?.message} autoComplete="given-name" placeholder="Arjun" />
-      <TextField label="Last Name" required registration={register("lastName")} error={errors.lastName?.message} autoComplete="family-name" placeholder="Menon" />
+      <TextField label="Last Name" registration={register("lastName")} error={errors.lastName?.message} autoComplete="family-name" placeholder="Menon" />
       <TextField
         label="Business Email"
         type="email"
@@ -26,33 +26,31 @@ export function StepPersonalInfo() {
         placeholder="you@company.com"
       />
 
-      <FormField label="Phone Number" htmlFor="phone" required error={errors.phone?.message}>
-        <div className="flex gap-2">
-          <select
-            aria-label="Country code"
-            className={clsx(fieldClasses, "w-[110px] flex-shrink-0 appearance-none cursor-pointer")}
-            {...register("countryCode")}
-          >
-            {COUNTRY_CODE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.value}
-              </option>
-            ))}
-          </select>
+      <FormField label="Mobile Number" htmlFor="phone" required error={errors.phone?.message}>
+        <div
+          className={clsx(
+            "flex items-center bg-card border border-border rounded-xl overflow-hidden focus-within:border-secondary transition-colors",
+            errors.phone && fieldErrorClasses
+          )}
+        >
+          <span className="flex-shrink-0 pl-4 pr-3 py-3.5 text-sm font-medium text-tx2 border-r border-border select-none" aria-hidden="true">
+            {DEFAULT_COUNTRY_CODE}
+          </span>
           <input
             id="phone"
             type="tel"
+            inputMode="numeric"
             placeholder="98765 43210"
             autoComplete="tel-national"
             aria-invalid={!!errors.phone}
-            className={clsx(fieldClasses, errors.phone && fieldErrorClasses)}
+            aria-describedby={errors.phone ? "phone-error" : undefined}
+            className="w-full min-w-0 bg-transparent outline-none py-3.5 px-3 text-sm text-tx placeholder:text-muted"
             {...register("phone")}
           />
         </div>
       </FormField>
 
       <TextField label="Company Name" required registration={register("company")} error={errors.company?.message} autoComplete="organization" placeholder="Your company" />
-      <TextField label="Job Title" required registration={register("designation")} error={errors.designation?.message} autoComplete="organization-title" placeholder="Marketing Head" />
       <TextField
         label="Website URL"
         type="url"
@@ -60,13 +58,6 @@ export function StepPersonalInfo() {
         error={errors.website?.message}
         autoComplete="url"
         placeholder="https://yourcompany.com"
-      />
-      <TextField
-        label="LinkedIn"
-        type="url"
-        registration={register("linkedin")}
-        error={errors.linkedin?.message}
-        placeholder="https://linkedin.com/in/you"
       />
     </div>
   );

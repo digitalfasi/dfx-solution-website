@@ -1,13 +1,13 @@
 import { z } from "zod";
 import {
-  SERVICE_VALUES,
   INDUSTRY_VALUES,
+  PRIMARY_SERVICE_VALUES,
   COMPANY_SIZE_VALUES,
-  MONTHLY_REVENUE_VALUES,
   MARKETING_BUDGET_VALUES,
-  MARKETING_CHANNEL_VALUES,
-  TARGET_MARKET_VALUES,
+  PRIMARY_GOAL_VALUES,
   TIMELINE_VALUES,
+  HEAR_ABOUT_US_VALUES,
+  PROJECT_BUDGET_VALUES,
 } from "@/types/lead";
 
 const NAME_REGEX = /^[a-zA-ZÀ-ſ][a-zA-ZÀ-ſ' -]{0,49}$/;
@@ -22,6 +22,15 @@ const nameField = (label: string) =>
     .max(50, `${label} must be under 50 characters`)
     .regex(NAME_REGEX, `${label} contains invalid characters`);
 
+const optionalNameField = (label: string) =>
+  z
+    .string()
+    .trim()
+    .max(50, `${label} must be under 50 characters`)
+    .regex(NAME_REGEX, `${label} contains invalid characters`)
+    .optional()
+    .or(z.literal(""));
+
 const optionalUrl = (label: string) =>
   z
     .string()
@@ -31,10 +40,10 @@ const optionalUrl = (label: string) =>
     .or(z.literal(""))
     .refine((v) => !v || /^https?:\/\/.+\..+/i.test(v), `Enter a valid ${label} URL (include https://)`);
 
-/** Step 1 — Personal information. */
+/** Step 1 — Contact details. */
 export const personalInfoSchema = z.object({
   firstName: nameField("First name"),
-  lastName: nameField("Last name"),
+  lastName: optionalNameField("Last name"),
   email: z
     .string()
     .trim()
@@ -45,50 +54,37 @@ export const personalInfoSchema = z.object({
   phone: z
     .string()
     .trim()
-    .min(4, "Enter a valid phone number")
-    .max(17, "Enter a valid phone number")
-    .regex(PHONE_CHARS_REGEX, "Enter a valid phone number")
+    .min(4, "Enter a valid mobile number")
+    .max(17, "Enter a valid mobile number")
+    .regex(PHONE_CHARS_REGEX, "Enter a valid mobile number")
     .refine((v) => {
       const digits = v.replace(/\D/g, "");
       return digits.length >= 6 && digits.length <= 14;
-    }, "Enter a valid phone number"),
-  countryCode: z.string().trim().regex(COUNTRY_CODE_REGEX, "Select a valid country code"),
+    }, "Enter a valid mobile number"),
+  countryCode: z.string().trim().regex(COUNTRY_CODE_REGEX, "Invalid country code"),
   company: z
     .string()
     .trim()
     .min(2, "Company name must be at least 2 characters")
     .max(100, "Company name must be under 100 characters"),
-  designation: z
-    .string()
-    .trim()
-    .min(2, "Job title must be at least 2 characters")
-    .max(100, "Job title must be under 100 characters"),
   website: optionalUrl("website"),
-  linkedin: optionalUrl("LinkedIn"),
 });
 
 /** Step 2 — Business information. */
 export const businessInfoSchema = z.object({
   industry: z.enum(INDUSTRY_VALUES, { message: "Select an industry" }),
+  primaryService: z.enum(PRIMARY_SERVICE_VALUES, { message: "Select the primary service needed" }),
   companySize: z.enum(COMPANY_SIZE_VALUES, { message: "Select your company size" }),
-  monthlyRevenue: z.enum(MONTHLY_REVENUE_VALUES).optional().or(z.literal("")),
-  currentChannels: z.array(z.enum(MARKETING_CHANNEL_VALUES)).max(20),
-  businessLocation: z.string().trim().max(150).optional().or(z.literal("")),
-  targetMarket: z.enum(TARGET_MARKET_VALUES).optional().or(z.literal("")),
   marketingBudget: z.enum(MARKETING_BUDGET_VALUES, { message: "Select a monthly marketing budget" }),
-  services: z.array(z.enum(SERVICE_VALUES)).min(1, "Select at least one service"),
 });
 
-/** Step 3 — Project details. */
+/** Step 3 — Project information. */
 export const projectDetailsSchema = z.object({
-  timeline: z.enum(TIMELINE_VALUES, { message: "Select a timeline" }),
-  businessChallenge: z.string().trim().max(2000).optional().or(z.literal("")),
-  goal: z.string().trim().max(2000).optional().or(z.literal("")),
+  primaryGoal: z.enum(PRIMARY_GOAL_VALUES, { message: "Select your primary goal" }),
+  timeline: z.enum(TIMELINE_VALUES, { message: "Select a project timeline" }),
+  hearAboutUs: z.enum(HEAR_ABOUT_US_VALUES, { message: "Let us know how you heard about us" }),
+  projectBudget: z.enum(PROJECT_BUDGET_VALUES, { message: "Select an estimated project budget" }),
   message: z.string().trim().max(2000).optional().or(z.literal("")),
-  attachmentUrl: z.string().trim().max(600).optional().or(z.literal("")),
-  attachmentName: z.string().trim().max(200).optional().or(z.literal("")),
-  attachmentSize: z.number().int().nonnegative().optional(),
-  attachmentType: z.string().trim().max(150).optional().or(z.literal("")),
 });
 
 const antiSpamSchema = z.object({

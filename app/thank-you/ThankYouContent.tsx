@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import clsx from "clsx";
 import type { LeadSummary } from "@/types/lead";
-import { SERVICE_OPTIONS, MARKETING_BUDGET_OPTIONS, TIMELINE_OPTIONS } from "@/types/lead";
-import { labelFor, labelsFor } from "@/utils/labels";
+import { PRIMARY_SERVICE_OPTIONS, MARKETING_BUDGET_OPTIONS, TIMELINE_OPTIONS } from "@/types/lead";
+import { labelFor } from "@/utils/labels";
 import { trackGenerateLead } from "@/utils/analytics";
 import { SITE_CONFIG } from "@/lib/config/site";
 import { LEAD_SCORE_MAX } from "@/lib/config/leadScoring";
@@ -62,7 +62,7 @@ export function ThankYouContent() {
           if (markTrackedOnce(data.leadId)) {
             trackGenerateLead({
               leadId: data.leadId,
-              services: data.services,
+              primaryService: data.primaryService,
               marketingBudget: data.marketingBudget,
               leadScore: data.leadScore,
               priority: data.priority,
@@ -109,7 +109,7 @@ export function ThankYouContent() {
               href="/"
               className="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-tx border border-border bg-white hover:border-secondary transition-colors duration-300"
             >
-              Return Home
+              Back to Website
             </Link>
           </div>
         </div>
@@ -139,9 +139,12 @@ export function ThankYouContent() {
         </motion.div>
 
         <h1 className="font-semibold tracking-tight text-2xl md:text-3xl mb-2">
-          Thank you {lead.firstName} <span aria-hidden="true">🎉</span>
+          Thank you, {lead.firstName}! <span aria-hidden="true">🎉</span>
         </h1>
-        <p className="text-tx2 mb-6">We&apos;ve received your enquiry.</p>
+        <p className="text-tx2 mb-6 max-w-[42ch] mx-auto">
+          We&apos;ve received your request successfully. Our AI Growth Team will review your requirements and contact
+          you within one business day.
+        </p>
 
         <div className="inline-flex flex-col items-center gap-1 rounded-xl bg-glow/40 px-6 py-3 mb-8">
           <span className="text-xs text-muted">Reference ID</span>
@@ -153,7 +156,7 @@ export function ThankYouContent() {
           <SummaryRow label="Company" value={lead.company} />
           <SummaryRow label="Email" value={lead.email} />
           <SummaryRow label="Phone" value={lead.phone} />
-          <SummaryRow label="Services" value={labelsFor(SERVICE_OPTIONS, lead.services)} />
+          <SummaryRow label="Service Needed" value={labelFor(PRIMARY_SERVICE_OPTIONS, lead.primaryService)} />
           <SummaryRow label="Budget" value={labelFor(MARKETING_BUDGET_OPTIONS, lead.marketingBudget)} />
           <SummaryRow label="Timeline" value={labelFor(TIMELINE_OPTIONS, lead.timeline)} />
           <SummaryRow label="Submitted" value={new Date(lead.submittedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })} />
@@ -182,13 +185,7 @@ export function ThankYouContent() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <a
-            href={SITE_CONFIG.anchors.booking}
-            className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold text-white bg-gradient-to-br from-primary to-secondary hover:shadow-[0_10px_34px_-8px_rgba(135,119,224,0.45)] hover:scale-[1.02] active:scale-[0.98] transition-[transform,box-shadow] duration-300"
-          >
-            Book Strategy Session
-          </a>
+        <div className="grid sm:grid-cols-3 gap-3">
           <a
             href={whatsappUrl}
             target="_blank"
@@ -197,18 +194,18 @@ export function ThankYouContent() {
           >
             Continue to WhatsApp
           </a>
+          <a
+            href={SITE_CONFIG.anchors.booking}
+            className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold text-white bg-gradient-to-br from-primary to-secondary hover:shadow-[0_10px_34px_-8px_rgba(135,119,224,0.45)] hover:scale-[1.02] active:scale-[0.98] transition-[transform,box-shadow] duration-300"
+          >
+            Schedule a Strategy Call
+          </a>
           <Link
             href="/"
             className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold text-tx border border-border bg-white hover:border-secondary hover:bg-cardHover transition-colors duration-300"
           >
-            Return Home
+            Back to Website
           </Link>
-          <a
-            href={SITE_CONFIG.anchors.portfolio}
-            className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold text-tx border border-border bg-white hover:border-secondary hover:bg-cardHover transition-colors duration-300"
-          >
-            View Portfolio
-          </a>
         </div>
       </motion.div>
     </section>

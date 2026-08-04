@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { leadFormSchema, STEP_FIELDS, type LeadFormSchema } from "@/validation/leadSchema";
 import { useUtmParams } from "@/hooks/useUtmParams";
 import { captureDeviceContext } from "@/utils/deviceContext";
-import type { CreateLeadResponse } from "@/types/lead";
+import { DEFAULT_COUNTRY_CODE, type CreateLeadResponse } from "@/types/lead";
 
 export type LeadFormState = "idle" | "submitting" | "error";
 
@@ -18,29 +18,20 @@ const DEFAULT_VALUES: LeadFormSchema = {
   lastName: "",
   email: "",
   phone: "",
-  countryCode: "+91",
+  countryCode: DEFAULT_COUNTRY_CODE,
   company: "",
-  designation: "",
   website: "",
-  linkedin: "",
 
   industry: "" as LeadFormSchema["industry"],
+  primaryService: "" as LeadFormSchema["primaryService"],
   companySize: "" as LeadFormSchema["companySize"],
-  monthlyRevenue: "",
-  currentChannels: [],
-  businessLocation: "",
-  targetMarket: "",
   marketingBudget: "" as LeadFormSchema["marketingBudget"],
-  services: [],
 
+  primaryGoal: "" as LeadFormSchema["primaryGoal"],
   timeline: "" as LeadFormSchema["timeline"],
-  businessChallenge: "",
-  goal: "",
+  hearAboutUs: "" as LeadFormSchema["hearAboutUs"],
+  projectBudget: "" as LeadFormSchema["projectBudget"],
   message: "",
-  attachmentUrl: "",
-  attachmentName: "",
-  attachmentSize: undefined,
-  attachmentType: "",
 
   companyWebsiteHp: "",
   formRenderedAt: 0,

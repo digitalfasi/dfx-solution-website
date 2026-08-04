@@ -1,7 +1,7 @@
 import { Check } from "lucide-react";
 import clsx from "clsx";
 
-const STEP_LABELS = ["Personal Info", "Business Info", "Project Details"];
+const STEP_LABELS = ["Contact Details", "Business Info", "Project Info"];
 
 export function ProgressIndicator({ step, totalSteps }: { step: number; totalSteps: number }) {
   return (

@@ -17,10 +17,10 @@ export async function sendLeadNotificationEmails(lead: Lead): Promise<void> {
   }
 
   const results = await Promise.allSettled([
-    SITE_CONFIG.salesNotificationEmail
+    SITE_CONFIG.internalNotificationEmail
       ? resend.emails.send({
           from: SITE_CONFIG.emailFrom,
-          to: SITE_CONFIG.salesNotificationEmail,
+          to: SITE_CONFIG.internalNotificationEmail,
           ...renderInternalNotificationEmail(lead),
         })
       : Promise.resolve(undefined),

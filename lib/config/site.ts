@@ -12,7 +12,8 @@ export const SITE_CONFIG = {
     "/logo/dfx-solution-logo.png",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919344024373",
   emailFrom: process.env.EMAIL_FROM || "DFX Solution <onboarding@resend.dev>",
-  salesNotificationEmail: process.env.SALES_NOTIFICATION_EMAIL || "",
+  /** Internal sales-team lead notification. Must go to info@, not sales@ — see .env.example. */
+  internalNotificationEmail: process.env.INTERNAL_NOTIFICATION_EMAIL || "info@dfxsolution.com",
   anchors: {
     booking: "/#contact",
     portfolio: "/#trusted",

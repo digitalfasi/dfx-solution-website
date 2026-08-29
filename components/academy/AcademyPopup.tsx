@@ -237,6 +237,23 @@ export function AcademyPopup() {
           from { opacity: 0; transform: translateY(32px); }
           to   { opacity: 1; transform: translateY(0);    }
         }
+        /* Viewport-safe max height.
+           vh first as the universal fallback, dvh layered on top for browsers
+           that support it (correct with mobile dynamic toolbars). */
+        #ap-dialog {
+          max-height: calc(100vh - 24px);
+        }
+        @supports (height: 100dvh) {
+          #ap-dialog { max-height: calc(100dvh - 24px); }
+        }
+        @media (min-width: 640px) {
+          #ap-dialog { max-height: calc(100vh - 48px); }
+        }
+        @supports (height: 100dvh) {
+          @media (min-width: 640px) {
+            #ap-dialog { max-height: calc(100dvh - 48px); }
+          }
+        }
         /* Hide scrollbar visually while keeping scroll functional */
         #ap-body {
           scrollbar-width: none;
@@ -276,8 +293,8 @@ export function AcademyPopup() {
             // White card with subtle navy border + premium shadow
             "bg-white border border-[#CBD5E1]/70",
             "shadow-[0_32px_80px_-8px_rgba(13,27,54,0.22),0_8px_24px_-4px_rgba(0,0,0,0.12)]",
-            // Viewport-safe max height
-            "max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-48px)]",
+            // Viewport-safe max height — applied via #ap-dialog rules above
+            // (kept out of Tailwind so the dvh/vh fallback order is deterministic)
             // Entrance animation
             "animate-[ap-slide-in-mobile_0.32s_cubic-bezier(0.16,1,0.3,1)_forwards]",
             "sm:animate-[ap-slide-in_0.32s_cubic-bezier(0.16,1,0.3,1)_forwards]",

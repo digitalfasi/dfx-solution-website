@@ -19,6 +19,16 @@ const config: Config = {
         muted: "#6E7F99",
         border: "rgba(24,27,49,0.10)",
         green: "#0AC994",
+        /* DFX Academy vertical — navy + bright blue, matching the Academy
+           logo. Scoped to Academy routes; the parent site keeps its own palette. */
+        academy: {
+          navy: "#0D1B36",
+          navy2: "#16294B",
+          blue: "#007BFF",
+          blueDark: "#0059C7",
+          tint: "#F2F7FF",
+          mist: "#E4EDFB",
+        },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],

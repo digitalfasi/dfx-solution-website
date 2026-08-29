@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const SECTIONS = ["hero", "why", "industries", "services", "products", "faq", "contact"];
 
 export function SideDots() {
   const [active, setActive] = useState("hero");
+  const pathname = usePathname();
 
   useEffect(() => {
     const els = SECTIONS.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
@@ -19,7 +21,11 @@ export function SideDots() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [pathname]);
+
+  // The dots map the single-page home route only — other routes (Academy)
+  // have their own section navigation.
+  if (pathname !== "/") return null;
 
   return (
     <div className="hidden lg:flex fixed right-6 top-1/2 -translate-y-1/2 z-30 flex-col gap-3">

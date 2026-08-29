@@ -22,9 +22,27 @@ function row(label: string, value: string): string {
   </tr>`;
 }
 
+/**
+ * Academy enquiries compose the learner's answers into `message` as
+ * "DFX Academy Enquiry | Status: … | Preferred Mode: …" (see
+ * lib/academy/leadAdapter.ts). Pulls one labelled answer back out for display,
+ * returning "" when the format doesn't match so the row falls back to "—".
+ */
+function academyAnswer(message: string | null, label: string): string {
+  if (!message) return "";
+  const match = new RegExp(`${label}:\\s*([^|]+)`, "i").exec(message);
+  return match ? match[1].trim() : "";
+}
+
 /** Internal sales-team notification — fired right after a lead is created. */
 export function renderInternalNotificationEmail(lead: Lead): { subject: string; html: string } {
   const priorityColor = PRIORITY_COLOR[lead.priority] || "#6E7F99";
+
+  // Academy forms only ever collect name / phone / email / status / mode. The
+  // business + project enums on an Academy lead are placeholders injected by
+  // buildAcademyLeadPayload() to satisfy the shared (non-nullable) Lead model —
+  // rendering them would show sales answers the learner never actually gave.
+  const isAcademyLead = (lead.source || "").toLowerCase().startsWith("academy");
 
   const bodyHtml = `
     <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#895ED0;">New Lead — ${escapeHtml(lead.leadId)}</p>
@@ -47,11 +65,19 @@ export function renderInternalNotificationEmail(lead: Lead): { subject: string; 
       ${row("Name", escapeHtml(lead.fullName))}
       ${row("Email", `<a href="mailto:${escapeHtml(lead.email)}" style="color:#8777E0;">${escapeHtml(lead.email)}</a>`)}
       ${row("Phone", escapeHtml(`${lead.countryCode} ${lead.phone}`))}
-      ${row("Company", escapeHtml(lead.company))}
-      ${row("Website", lead.website ? `<a href="${escapeHtml(lead.website)}" style="color:#8777E0;">${escapeHtml(lead.website)}</a>` : "—")}
+      ${isAcademyLead ? "" : row("Company", escapeHtml(lead.company))}
+      ${isAcademyLead ? "" : row("Website", lead.website ? `<a href="${escapeHtml(lead.website)}" style="color:#8777E0;">${escapeHtml(lead.website)}</a>` : "—")}
     </table>
 
-    <h2 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#181B31;">Business</h2>
+    ${
+      isAcademyLead
+        ? `<h2 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#181B31;">Academy Enquiry</h2>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+      ${row("Programme", "AI-Integrated Digital Marketing")}
+      ${row("Current Status", escapeHtml(academyAnswer(lead.message, "Status")))}
+      ${row("Preferred Mode", escapeHtml(academyAnswer(lead.message, "Preferred Mode")))}
+    </table>`
+        : `<h2 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#181B31;">Business</h2>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
       ${row("Industry", escapeHtml(labelFor(INDUSTRY_OPTIONS, lead.industry)))}
       ${row("Primary Service Needed", escapeHtml(labelFor(PRIMARY_SERVICE_OPTIONS, lead.primaryService)))}
@@ -66,7 +92,8 @@ export function renderInternalNotificationEmail(lead: Lead): { subject: string; 
       ${row("How They Heard About Us", escapeHtml(labelFor(HEAR_ABOUT_US_OPTIONS, lead.hearAboutUs)))}
       ${row("Estimated Project Budget", escapeHtml(labelFor(PROJECT_BUDGET_OPTIONS, lead.projectBudget)))}
       ${row("Project Details", escapeHtml(lead.message))}
-    </table>
+    </table>`
+    }
 
     <h2 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#181B31;">Attribution &amp; Meta</h2>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
@@ -74,6 +101,11 @@ export function renderInternalNotificationEmail(lead: Lead): { subject: string; 
       ${row("Campaign", escapeHtml(lead.campaign))}
       ${row("Landing Page", escapeHtml(lead.landingPage))}
       ${row("Referrer", escapeHtml(lead.referrer))}
+      ${/* Click IDs are auto-appended by Google/Meta even on untagged ad links, so their
+            presence alone marks a paid lead. Rendered only when set — they're long opaque
+            strings that would be noise on the organic leads that make up most of the list. */ ""}
+      ${lead.gclid ? row("Google Ads Click ID", `<span style="word-break:break-all;">${escapeHtml(lead.gclid)}</span>`) : ""}
+      ${lead.fbclid ? row("Meta Click ID", `<span style="word-break:break-all;">${escapeHtml(lead.fbclid)}</span>`) : ""}
       ${row("Device / Browser / OS", escapeHtml(`${lead.device || "—"} / ${lead.browser || "—"} / ${lead.os || "—"}`))}
       ${row("Location", escapeHtml(`${lead.city || "—"}, ${lead.country || "—"}`))}
       ${row("Submitted At", escapeHtml(new Date(lead.submittedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })))}

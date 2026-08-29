@@ -4,11 +4,11 @@ const COLUMNS = [
   {
     heading: "Company",
     links: [
-      { label: "Why DFX Solution", href: "#why" },
-      { label: "Industries", href: "#industries" },
-      { label: "Services", href: "#services" },
-      { label: "Products", href: "#products" },
-      { label: "Client Work", href: "#trusted" },
+      { label: "Why DFX Solution", href: "/#why" },
+      { label: "Industries", href: "/#industries" },
+      { label: "Services", href: "/#services" },
+      { label: "Products", href: "/#products" },
+      { label: "Client Work", href: "/#trusted" },
     ],
   },
   {
@@ -19,6 +19,16 @@ const COLUMNS = [
       { label: "Google & Meta Ads", href: "#services" },
       { label: "AI Automation", href: "#services" },
       { label: "CRM Systems", href: "#services" },
+    ],
+  },
+  {
+    heading: "Academy",
+    links: [
+      { label: "DFX Academy", href: "/academy" },
+      { label: "AI Digital Marketing", href: "/academy/ai-digital-marketing" },
+      { label: "8-Week Journey", href: "/academy#journey" },
+      { label: "Resources", href: "/academy/resources" },
+      { label: "Enquire", href: "/academy/enquire" },
     ],
   },
   {
@@ -42,7 +52,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-tx container-px pt-16 pb-10">
       <div className="max-w-container mx-auto">
-        <div className="grid lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-12 pb-14">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-10 pb-14">
           {/* Brand block */}
           <div>
             <div className="flex items-center mb-4">

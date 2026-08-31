@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { AcademyButton, Arrow } from "./primitives";
+import { openAcademyEnquiry } from "./AcademyPopup";
 
 /**
  * Section 01: HERO — Refined with balanced headline scale & concise copy.
@@ -177,6 +178,12 @@ export function AcademyHeroPremium() {
             href="#enquire"
             variant="onDark"
             event="academy_enquire_click"
+            onClick={(e) => {
+              // Open the enquiry modal in place. The href remains a working
+              // fallback to the #enquire section if JS has not run.
+              e.preventDefault();
+              openAcademyEnquiry("hero_enquire_cta");
+            }}
           >
             Enquire Now <Arrow />
           </AcademyButton>

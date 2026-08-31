@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { trackAcademy, type AcademyEvent } from "@/lib/academy/track";
@@ -181,6 +181,7 @@ export function AcademyButton({
   eventParams,
   className,
   external = false,
+  onClick: onClickProp,
 }: {
   href: string;
   children: ReactNode;
@@ -189,6 +190,9 @@ export function AcademyButton({
   eventParams?: Record<string, unknown>;
   className?: string;
   external?: boolean;
+  /** Runs after tracking. Call preventDefault() to suppress navigation — the
+   *  href stays as a no-JS fallback. */
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
 }) {
   const classes = clsx(
     "group inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-semibold whitespace-nowrap transition-all duration-300",
@@ -199,7 +203,10 @@ export function AcademyButton({
     variant === "onDark" && "border border-white/25 text-white hover:bg-white hover:text-academy-navy",
     className
   );
-  const onClick = () => event && trackAcademy(event, eventParams);
+  const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (event) trackAcademy(event, eventParams);
+    onClickProp?.(e);
+  };
 
   if (external) {
     return (

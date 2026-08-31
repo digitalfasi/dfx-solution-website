@@ -49,6 +49,15 @@ function unlockScroll(savedScrollY: number) {
   window.scrollTo({ top: savedScrollY, behavior: "instant" });
 }
 
+// ── Imperative open ──────────────────────────────────────────────────────────
+// Any CTA on the page can raise the enquiry modal without the popup having to
+// own the button. Kept as a window event so no provider/context is needed.
+export const ACADEMY_ENQUIRY_EVENT = "academy:open-enquiry";
+
+export function openAcademyEnquiry(source = "cta") {
+  window.dispatchEvent(new CustomEvent(ACADEMY_ENQUIRY_EVENT, { detail: { source } }));
+}
+
 export function AcademyPopup() {
   const [open,    setOpen]    = useState(false);
   const [started, setStarted] = useState(false);
@@ -69,6 +78,7 @@ export function AcademyPopup() {
   const firstFocusRef   = useRef<HTMLButtonElement>(null);
   const triggerRef      = useRef<HTMLElement | null>(null);
   const savedScrollYRef = useRef(0);
+  const openSourceRef   = useRef("academy_page_5s_delay");
 
   // ── 5-second trigger ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -86,11 +96,22 @@ export function AcademyPopup() {
     return () => clearTimeout(timer);
   }, []);
 
+  // ── Open on demand from any CTA ───────────────────────────────────────────
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const detail = (e as CustomEvent<{ source?: string }>).detail;
+      openSourceRef.current = detail?.source || "cta";
+      setOpen(true);
+    };
+    window.addEventListener(ACADEMY_ENQUIRY_EVENT, onOpen);
+    return () => window.removeEventListener(ACADEMY_ENQUIRY_EVENT, onOpen);
+  }, []);
+
   // ── Focus management ──────────────────────────────────────────────────────
   useEffect(() => {
     if (open) {
       triggerRef.current = document.activeElement as HTMLElement;
-      trackAcademy("academy_popup_impression", { source: "academy_page_5s_delay" });
+      trackAcademy("academy_popup_impression", { source: openSourceRef.current });
       requestAnimationFrame(() => firstFocusRef.current?.focus());
     } else if (triggerRef.current) {
       (triggerRef.current as HTMLElement).focus();

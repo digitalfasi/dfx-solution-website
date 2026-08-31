@@ -55,7 +55,7 @@ export function AcademyHeroPremium() {
              padding rule in globals.css */
           section.ahp-shell.hero-shell {
             /* nav (76px) + band height + breathing room */
-            padding-top: calc(76px + (941 / 1672 * 100vw) + 26px);
+            padding-top: calc(76px + (941 / 1672 * 100vw) + 18px);
           }
           .ahp-media {
             top: 76px;
@@ -65,6 +65,43 @@ export function AcademyHeroPremium() {
             transform: none !important;
           }
           .ahp-scrim-x { display: none; }
+
+          /* Height budget: nav (76px) + the uncropped band (~56vw) is fixed
+             chrome, so the copy runs on a tighter rhythm to keep the headline,
+             support copy and BOTH CTAs above the fold on a phone. */
+          .ahp-copy h1 { margin-top: 12px; font-size: 1.95rem; line-height: 1.12; }
+          .ahp-copy .ahp-sub { margin-top: 12px; font-size: 14px; line-height: 1.5; }
+          .ahp-copy .ahp-micro { margin-top: 12px; }
+          .ahp-copy .ahp-cta { margin-top: 22px; gap: 12px; }
+          .ahp-cta a { padding: 13px 24px; }
+        }
+        /* Mid-height phones: same budget, less room -> tighten the rhythm. */
+        @media (max-width: 639.98px) and (max-height: 740px) {
+          section.ahp-shell.hero-shell {
+            padding-top: calc(76px + (941 / 1672 * 100vw) + 14px);
+          }
+          .ahp-copy h1 { margin-top: 10px; font-size: 1.68rem; line-height: 1.1; }
+          .ahp-copy .ahp-sub { margin-top: 10px; font-size: 13px; line-height: 1.42; }
+          .ahp-copy .ahp-micro { margin-top: 10px; }
+          .ahp-copy .ahp-cta { margin-top: 16px; }
+          .ahp-cta a { padding: 12px 22px; }
+        }
+        /* Short phones: drop the decorative micro-line too (it is already set
+           in the hero art) so both CTAs still clear the fold. */
+        @media (max-width: 639.98px) and (max-height: 660px) {
+          .ahp-copy h1 { font-size: 1.58rem; }
+          .ahp-copy .ahp-micro { display: none; }
+          .ahp-copy .ahp-cta { margin-top: 14px; }
+        }
+        /* Very short viewports (in-app browsers on small phones). */
+        @media (max-width: 639.98px) and (max-height: 600px) {
+          section.ahp-shell.hero-shell {
+            padding-top: calc(76px + (941 / 1672 * 100vw) + 8px);
+          }
+          .ahp-copy h1 { margin-top: 8px; font-size: 1.45rem; }
+          .ahp-copy .ahp-sub { margin-top: 8px; font-size: 12.4px; line-height: 1.35; }
+          .ahp-copy .ahp-cta { margin-top: 10px; }
+          .ahp-cta a { padding: 10px 18px; font-size: 13px; }
         }
       `}</style>
     <section
@@ -105,7 +142,7 @@ export function AcademyHeroPremium() {
 
       {/* ── HERO CONTENT (Balanced Typography & Max-Width) ── */}
       <div
-        className="relative mx-auto w-full max-w-container container-px"
+        className="ahp-copy relative mx-auto w-full max-w-container container-px"
         style={{
           transform: "translateY(calc(var(--hero-p) * 12%))",
           opacity: "calc(1 - var(--hero-p) * 1.2)",
@@ -122,17 +159,17 @@ export function AcademyHeroPremium() {
         </h1>
 
         {/* Supporting Copy */}
-        <p className="mt-4 max-w-[520px] text-[15px] sm:text-[16px] leading-relaxed text-white/80">
+        <p className="ahp-sub mt-4 max-w-[520px] text-[15px] sm:text-[16px] leading-relaxed text-white/80">
           Learn modern digital marketing with AI, real projects and practical guidance — and turn what you learn into something you can actually build.
         </p>
 
         {/* Motivational Micro-Line */}
-        <p className="mt-4 text-xs font-bold uppercase tracking-[.24em] text-academy-blue">
+        <p className="ahp-micro mt-4 text-xs font-bold uppercase tracking-[.24em] text-academy-blue">
           Learn. Apply. Build. Grow.
         </p>
 
         {/* Action CTAs */}
-        <div className="mt-8 flex flex-wrap items-center gap-4">
+        <div className="ahp-cta mt-8 flex flex-wrap items-center gap-4">
           <AcademyButton href="#programs" variant="primary" event="academy_explore_program">
             Explore Programs <Arrow />
           </AcademyButton>

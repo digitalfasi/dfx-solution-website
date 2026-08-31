@@ -237,22 +237,28 @@ export function AcademyPopup() {
           from { opacity: 0; transform: translateY(32px); }
           to   { opacity: 1; transform: translateY(0);    }
         }
-        /* Viewport-safe max height.
-           vh first as the universal fallback, dvh layered on top for browsers
-           that support it (correct with mobile dynamic toolbars). */
-        #ap-dialog {
-          max-height: calc(100vh - 24px);
-        }
-        @supports (height: 100dvh) {
-          #ap-dialog { max-height: calc(100dvh - 24px); }
+        /* The overlay is fixed to all four viewport edges, so its box always
+           equals the visible
+           viewport (no vh/dvh guesswork). Its padding carries the device safe
+           areas, and the card is capped at 100% of the resulting content box —
+           so the card can never exceed the viewport or sit under a notch,
+           home indicator or browser toolbar on any device. */
+        #ap-overlay {
+          padding: 0
+                   max(10px, env(safe-area-inset-right))
+                   max(10px, env(safe-area-inset-bottom))
+                   max(10px, env(safe-area-inset-left));
         }
         @media (min-width: 640px) {
-          #ap-dialog { max-height: calc(100vh - 48px); }
-        }
-        @supports (height: 100dvh) {
-          @media (min-width: 640px) {
-            #ap-dialog { max-height: calc(100dvh - 48px); }
+          #ap-overlay {
+            padding: max(16px, env(safe-area-inset-top))
+                     max(16px, env(safe-area-inset-right))
+                     max(16px, env(safe-area-inset-bottom))
+                     max(16px, env(safe-area-inset-left));
           }
+        }
+        #ap-dialog {
+          max-height: 100%;
         }
         /* Hide scrollbar visually while keeping scroll functional */
         #ap-body {
@@ -268,7 +274,8 @@ export function AcademyPopup() {
 
       {/* ── Root overlay ───────────────────────────────────────────────────── */}
       <div
-        className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4"
+        id="ap-overlay"
+        className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center"
         aria-hidden="false"
       >
         {/* Backdrop — click to close, does NOT scroll page */}
@@ -288,13 +295,12 @@ export function AcademyPopup() {
             "relative z-10 w-full max-w-[500px]",
             // Layout: flex column with overflow-hidden on shell so inner body is the scroll container
             "flex flex-col overflow-hidden",
-            // Rounded — bottom-sheet on mobile, card on sm+
-            "rounded-t-[24px] sm:rounded-[24px]",
+            // Rounded — card is inset from every edge, so all corners are round
+            "rounded-[24px]",
             // White card with subtle navy border + premium shadow
             "bg-white border border-[#CBD5E1]/70",
             "shadow-[0_32px_80px_-8px_rgba(13,27,54,0.22),0_8px_24px_-4px_rgba(0,0,0,0.12)]",
-            // Viewport-safe max height — applied via #ap-dialog rules above
-            // (kept out of Tailwind so the dvh/vh fallback order is deterministic)
+            // Viewport-safe max height — see the #ap-overlay / #ap-dialog rules above
             // Entrance animation
             "animate-[ap-slide-in-mobile_0.32s_cubic-bezier(0.16,1,0.3,1)_forwards]",
             "sm:animate-[ap-slide-in_0.32s_cubic-bezier(0.16,1,0.3,1)_forwards]",
@@ -328,7 +334,7 @@ export function AcademyPopup() {
           {/* ── Body — ONLY scroll container with ample bottom breathing room ── */}
           <div
             id="ap-body"
-            className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-4 pb-10 sm:pb-12"
+            className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-4 pb-0"
           >
 
             {/* ── Success state ────────────────────────────────────────── */}
@@ -495,10 +501,11 @@ export function AcademyPopup() {
                     </div>
                   </div>
 
-                  {/* Divider */}
-                  <div className="border-t border-[#E2E8F0] pt-1" />
-
-                  {/* CTA */}
+                  {/* CTA — pinned to the bottom of the scroll port so it stays
+                      visible at any viewport height. It sticks while the fields
+                      scroll beneath it, then settles into normal flow once the
+                      form bottom is reached, so tall viewports look unchanged. */}
+                  <div className="sticky bottom-0 -mx-5 sm:-mx-6 px-5 sm:px-6 pt-3 pb-4 bg-white border-t border-[#E2E8F0]">
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -515,9 +522,10 @@ export function AcademyPopup() {
                   </button>
 
                   {/* Trust microcopy */}
-                  <p className="text-center text-[11px] text-[#94A3B8] leading-relaxed">
+                  <p className="mt-3 text-center text-[11px] text-[#94A3B8] leading-relaxed">
                     Your details are kept confidential. No spam. &nbsp;·&nbsp; Learn. Apply. Build. Grow.
                   </p>
+                  </div>
 
                 </form>
               </>

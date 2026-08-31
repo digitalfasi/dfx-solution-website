@@ -41,17 +41,43 @@ export function AcademyHeroPremium() {
   }, [reduced]);
 
   return (
+    <>
+      {/* Mobile: the source art is 1672x941 (16:9). A tall phone hero would crop
+          ~65% of its width under object-cover, losing the DFX ACADEMY screen.
+          Below sm we therefore render it full-width at its true aspect ratio as
+          a band beneath the nav, and let the navy field carry the copy below —
+          the whole frame stays visible, uncropped and undistorted. */}
+      <style>{`
+        .ahp-scrim-y { display: block; }
+        @media (min-width: 640px) { .ahp-scrim-y { display: none; } }
+        @media (max-width: 639.98px) {
+          /* element + two classes, to outrank the .academy .hero-shell
+             padding rule in globals.css */
+          section.ahp-shell.hero-shell {
+            /* nav (76px) + band height + breathing room */
+            padding-top: calc(76px + (941 / 1672 * 100vw) + 26px);
+          }
+          .ahp-media {
+            top: 76px;
+            bottom: auto;
+            height: calc(941 / 1672 * 100vw);
+            /* no parallax on the band: shifting it would expose navy under the nav */
+            transform: none !important;
+          }
+          .ahp-scrim-x { display: none; }
+        }
+      `}</style>
     <section
       ref={ref}
       id="hero"
       data-nav-dark
-      className="hero-shell relative isolate flex min-h-[82vh] w-full flex-col justify-center overflow-hidden bg-academy-navy pt-24 pb-14 lg:pt-32 lg:pb-20"
+      className="ahp-shell hero-shell relative isolate flex min-h-[82vh] w-full flex-col justify-center overflow-hidden bg-academy-navy pt-24 pb-14 lg:pt-32 lg:pb-20"
       style={{ "--hero-p": 0 } as CSSProperties}
     >
       {/* ── MEDIA PLANE — SINGLE VISUAL ELEMENT ── */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 will-change-transform"
+        className="ahp-media absolute inset-0 -z-10 will-change-transform"
         style={{ transform: "translateY(calc(var(--hero-p) * 5%)) scale(calc(1 + var(--hero-p) * 0.03))" }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -62,8 +88,12 @@ export function AcademyHeroPremium() {
           style={{ objectPosition: "center center" }}
         />
 
-        {/* Navy readability gradient overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(98deg,rgba(13,27,54,0.96)_0%,rgba(13,27,54,0.85)_40%,rgba(13,27,54,0.40)_68%,rgba(13,27,54,0.12)_100%)]" />
+        {/* Navy readability gradient overlay — sm+ (copy sits over the photo) */}
+        <div className="ahp-scrim-x absolute inset-0 bg-[linear-gradient(98deg,rgba(13,27,54,0.96)_0%,rgba(13,27,54,0.85)_40%,rgba(13,27,54,0.40)_68%,rgba(13,27,54,0.12)_100%)]" />
+
+        {/* Mobile scrim — light top veil for nav legibility, bottom fade that
+            blends the uncropped photo band into the navy field below it */}
+        <div className="ahp-scrim-y absolute inset-0 bg-[linear-gradient(180deg,rgba(13,27,54,0.58)_0%,rgba(13,27,54,0.12)_20%,rgba(13,27,54,0.06)_58%,rgba(13,27,54,0.86)_92%,rgba(13,27,54,1)_100%)]" />
         <div className="absolute inset-0 bg-academy-navy" style={{ opacity: "calc(var(--hero-p) * 0.45)" }} />
       </div>
 
@@ -129,5 +159,6 @@ export function AcademyHeroPremium() {
         </span>
       </div>
     </section>
+    </>
   );
 }

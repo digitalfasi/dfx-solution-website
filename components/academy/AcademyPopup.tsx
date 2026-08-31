@@ -281,6 +281,29 @@ export function AcademyPopup() {
         #ap-dialog {
           max-height: 100%;
         }
+        /* Short viewports (a 1080p screen at 150% OS scaling is only ~591 CSS
+           px tall, and laptops with browser chrome are similar) cannot fit the
+           form at full rhythm, which pushed Current Status / Preferred Mode
+           below the scroll fold. Tighten the vertical rhythm rather than grow
+           the card, which is already capped to the viewport. Horizontal
+           spacing, type colours and radii are untouched. */
+        @media (max-height: 700px) {
+          #ap-head { padding-top: 12px; padding-bottom: 10px; }
+          #ap-head h2 { font-size: 1rem; margin-top: 2px; }
+          #ap-body { padding-top: 12px; padding-bottom: 12px; }
+          #ap-body .ap-lede { margin-bottom: 12px; font-size: 12.5px; line-height: 1.45; }
+          #ap-form > * + * { margin-top: 10px; }
+          #ap-form label { margin-bottom: 4px; }
+          #ap-form input, #ap-form select { padding-top: 8px; padding-bottom: 8px; }
+          #ap-foot { padding-top: 10px; padding-bottom: 12px; }
+          #ap-foot button { padding-top: 12px; padding-bottom: 12px; }
+          #ap-foot p { margin-top: 8px; }
+        }
+        /* Very short viewports: trim once more before falling back to scroll. */
+        @media (max-height: 560px) {
+          #ap-body .ap-lede { display: none; }
+          #ap-form > * + * { margin-top: 8px; }
+        }
         /* Hide scrollbar visually while keeping scroll functional */
         #ap-body {
           scrollbar-width: none;
@@ -329,7 +352,7 @@ export function AcademyPopup() {
           onKeyDown={handleKeyDown}
         >
           {/* ── Header — shrink-0 non-scrolling child ─────────────────────── */}
-          <div className="shrink-0 bg-white border-b border-[#E2E8F0] px-5 sm:px-6 pt-4 sm:pt-5 pb-3.5 flex items-start justify-between gap-4">
+          <div id="ap-head" className="shrink-0 bg-white border-b border-[#E2E8F0] px-5 sm:px-6 pt-4 sm:pt-5 pb-3.5 flex items-start justify-between gap-4">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-[.3em] text-[#007BFF]">
                 DFX ACADEMY ENQUIRY
@@ -385,7 +408,7 @@ export function AcademyPopup() {
             ) : (
               <>
                 {/* Supporting copy */}
-                <p className="text-[13px] sm:text-[14px] text-[#64748B] leading-relaxed mb-5">
+                <p className="ap-lede text-[13px] sm:text-[14px] text-[#64748B] leading-relaxed mb-5">
                   Explore the AI-integrated digital marketing program, understand the learning path, and find the right way to get started.
                 </p>
 
@@ -533,7 +556,7 @@ export function AcademyPopup() {
               covers a field. Submits #ap-form via the form attribute, so the
               button stays a native submit outside the form element. */}
           {popupState !== "success" && (
-            <div className="shrink-0 border-t border-[#E2E8F0] bg-white px-5 sm:px-6 pt-3.5 pb-4">
+            <div id="ap-foot" className="shrink-0 border-t border-[#E2E8F0] bg-white px-5 sm:px-6 pt-3.5 pb-4">
               <button
                 type="submit"
                 form="ap-form"

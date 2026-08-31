@@ -355,7 +355,7 @@ export function AcademyPopup() {
           {/* ── Body — ONLY scroll container with ample bottom breathing room ── */}
           <div
             id="ap-body"
-            className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-4 pb-0"
+            className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 sm:px-6 pt-4 pb-5"
           >
 
             {/* ── Success state ────────────────────────────────────────── */}
@@ -419,7 +419,7 @@ export function AcademyPopup() {
                 )}
 
                 {/* ── Form ─────────────────────────────────────────────── */}
-                <form onSubmit={handleSubmit} noValidate className="space-y-4">
+                <form id="ap-form" onSubmit={handleSubmit} noValidate className="space-y-4">
 
                   {/* Full Name */}
                   <div>
@@ -522,36 +522,40 @@ export function AcademyPopup() {
                     </div>
                   </div>
 
-                  {/* CTA — pinned to the bottom of the scroll port so it stays
-                      visible at any viewport height. It sticks while the fields
-                      scroll beneath it, then settles into normal flow once the
-                      form bottom is reached, so tall viewports look unchanged. */}
-                  <div className="sticky bottom-0 -mx-5 sm:-mx-6 px-5 sm:px-6 pt-3 pb-4 bg-white border-t border-[#E2E8F0]">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={[
-                      "w-full rounded-xl bg-[#007BFF] py-3.5 text-sm font-semibold text-white tracking-wide",
-                      "shadow-[0_6px_24px_-6px_rgba(0,123,255,0.40)]",
-                      "hover:bg-[#0059C7] hover:shadow-[0_10px_32px_-6px_rgba(0,123,255,0.5)]",
-                      "focus:outline-none focus:ring-2 focus:ring-[#007BFF]/40",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                      "active:scale-[0.985] transition-all duration-200",
-                    ].join(" ")}
-                  >
-                    {isSubmitting ? "Submitting…" : "Start My Journey →"}
-                  </button>
-
-                  {/* Trust microcopy */}
-                  <p className="mt-3 text-center text-[11px] text-[#94A3B8] leading-relaxed">
-                    Your details are kept confidential. No spam. &nbsp;·&nbsp; Learn. Apply. Build. Grow.
-                  </p>
-                  </div>
-
                 </form>
               </>
             )}
           </div>
+
+          {/* ── Footer — shrink-0 sibling of the scroll body ─────────────────
+              A real card footer rather than a sticky child: the scroll area
+              shrinks to fit above it, so the CTA is always visible AND never
+              covers a field. Submits #ap-form via the form attribute, so the
+              button stays a native submit outside the form element. */}
+          {popupState !== "success" && (
+            <div className="shrink-0 border-t border-[#E2E8F0] bg-white px-5 sm:px-6 pt-3.5 pb-4">
+              <button
+                type="submit"
+                form="ap-form"
+                disabled={isSubmitting}
+                className={[
+                  "w-full rounded-xl bg-[#007BFF] py-3.5 text-sm font-semibold text-white tracking-wide",
+                  "shadow-[0_6px_24px_-6px_rgba(0,123,255,0.40)]",
+                  "hover:bg-[#0059C7] hover:shadow-[0_10px_32px_-6px_rgba(0,123,255,0.5)]",
+                  "focus:outline-none focus:ring-2 focus:ring-[#007BFF]/40",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "active:scale-[0.985] transition-all duration-200",
+                ].join(" ")}
+              >
+                {isSubmitting ? "Submitting…" : "Start My Journey →"}
+              </button>
+
+              {/* Trust microcopy */}
+              <p className="mt-3 text-center text-[11px] text-[#94A3B8] leading-relaxed">
+                Your details are kept confidential. No spam. &nbsp;&middot;&nbsp; Learn. Apply. Build. Grow.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>

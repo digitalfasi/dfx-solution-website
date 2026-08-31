@@ -98,10 +98,10 @@ export function WhyDFX() {
 
                 {/* Integrated Caption */}
                 <div className="relative p-6 sm:p-7 bg-academy-navy text-white">
-                  {/* The wide-tracked eyebrow alone fills the card at phone
-                      widths, so the two labels stack there and only share a
-                      row once there is room for both. */}
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                  {/* Stacked at every width: the wide-tracked eyebrow and the
+                      meta label read as one block rather than competing across
+                      a justified row. */}
+                  <div className="flex flex-col gap-1">
                     <p className="text-[10px] font-bold uppercase tracking-[.26em] text-academy-blue">
                       PRACTICAL LEARNING ENVIRONMENT
                     </p>
